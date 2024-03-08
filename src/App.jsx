@@ -1,123 +1,153 @@
 import "./App.css";
-import { Box, Typography } from "@mui/material";
+import { Box, TextField, Typography, styled } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MicIcon from "@mui/icons-material/Mic";
+import * as React from "react";
+import Drawer from "@mui/material/Drawer";
+import Button from "@mui/material/Button";
+import { NavBarLarge, NavBarSmall } from "./components/Navbar";
+import { SideBarComponent } from "./components/SideBar";
 
 function App() {
+  const [open, setOpen] = React.useState(false);
+
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
+
   return (
-    <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
-      <Box
-        sx={{ display: { xs: "none", md: "initial" } }}
-        minHeight={"100vh"}
-        maxWidth={"280px"}
-        width={"100%"}
-        bgcolor={"#101418"}
-      >
-        <Box>
+    <>
+      <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
+        <SideBarComponent />
+        <Box
+          display={"flex"}
+          justifyContent={"flex-start"}
+          alignItems={"center"}
+          width={"100%"}
+          maxHeight={"100vh"}
+          height="100vh"
+          bgcolor={"#1b1b32"}
+          sx={{ overflowX: "hidden", overflowY: "scroll" }}
+          flexDirection={"column"}
+        >
+          {/* NAVBAR */}
+          <Box position={"sticky"} top={0} width={"100%"}>
+            {/* NAVBAR LARGE SCREEN */}
+            <Box
+              width={"100vw"}
+              sx={{ display: { xs: "none", sm: "none", md: "initial" } }}
+            >
+              <NavBarLarge />
+            </Box>
+            {/* NAVBAR SMALL SCREEN */}
+            <Box
+              sx={{ display: { xs: "initial", sm: "initial", md: "none" } }}
+              width={"100%"}
+              maxWidth={"xl"}
+            >
+              <NavBarSmall toggleDrawer={toggleDrawer} />
+            </Box>
+          </Box>
+          {/* Footer */}
           <Box
+            position={"fixed"}
             display={"flex"}
             justifyContent={"center"}
             alignItems={"center"}
-            sx={{ bgcolor: "#fff", width: "40px", height: "40px" }}
-          >
-            <MicIcon style={{ color: "red" }} />
-          </Box>
-          <Typography variant="body1" color="initial">
-            New Chat
-          </Typography>
-        </Box>
-      </Box>
-      <Box
-        display={"flex"}
-        justifyContent={"center"}
-        width={"100%"}
-        minHeight={"100vh"}
-        bgcolor={"#1b1b32"}
-      >
-        {/* NAVBAR*/}
-        <Box width={"100%"}>
-          {/* NAVBAR LARGE SCREEN */}
-          <Box
+            bottom={0}
+            zIndex={1}
             width={"100%"}
-            sx={{ display: { xs: "none", sm: "none", md: "initial" } }}
+            p={"20px 40px"}
+            maxWidth={"md"}
+            bgcolor={"#1b1b32"}
           >
-            <Box
-              padding={"10px 30px"}
-              sx={{ cursor: "pointer" }}
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              gap={"5px"}
-            >
-              <Typography
-                variant="h6"
-                color="#fff"
-                fontWeight={600}
-                fontStyle={"normal"}
-              >
-                VocinaAI
+            <BInput
+              multiline
+              dir="up"
+              maxRows={5}
+              InputProps={{
+                sx: {
+                  borderRadius: "15px",
+                  color: "#fff",
+                  fontSize: "14px",
+                },
+              }}
+              sx={{
+                minWidth: "280px",
+                maxWidth: "700px",
+                width: "100%",
+              }}
+              hiddenLabel
+              id="filled-hidden-label-normal"
+              placeholder="Message to AI..."
+              variant="outlined"
+            />
+          </Box>
+          {/* CHAT BOT CONTENT */}
+          <Box display={"flex"} justifyContent={"center"} width={"100%"}>
+            <Box maxWidth={"md"} width="100%" padding={"10px 20px"}>
+              <Typography variant="h1" color="#fff">
+                Hello
               </Typography>
-              <MicIcon style={{ color: "red" }} />
-            </Box>
-          </Box>
-          {/* NAVBAR SMALL SCREEN */}
-          <Box
-            sx={{ display: { xs: "initial", sm: "initial", md: "none" } }}
-            width={"100%"}
-            maxWidth={"xl"}
-          >
-            <Box>
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between" }}
-                p={"10px 20px"}
-              >
-                <Box
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                >
-                  <MenuIcon
-                    sx={{ cursor: "pointer" }}
-                    style={{ color: "#fff" }}
-                    fontSize="medium"
-                  />
-                </Box>
-                <Box
-                  sx={{ cursor: "pointer" }}
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  gap={"5px"}
-                >
-                  <Typography
-                    variant="h6"
-                    color="#fff"
-                    fontWeight={600}
-                    fontStyle={"normal"}
-                  >
-                    VocinaAI
-                  </Typography>
-                  <MicIcon style={{ color: "red" }} />
-                </Box>
-                <Box
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                >
-                  <DriveFileRenameOutlineIcon
-                    sx={{ cursor: "pointer" }}
-                    style={{ color: "#fff" }}
-                    fontSize="medium"
-                  />
-                </Box>
-              </Box>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
+              <Typography variant="h1" color="#fff">
+                Hello
+              </Typography>
             </Box>
           </Box>
         </Box>
       </Box>
-    </Box>
+
+      <Drawer
+        PaperProps={{ style: { maxWidth: "280px", width: "100%" } }}
+        open={open}
+        onClose={toggleDrawer(false)}
+      >
+        <SideBarComponent smallOpen={true} />
+      </Drawer>
+    </>
   );
 }
 
 export default App;
+
+const BInput = styled(TextField)({
+  "& label.Mui-focused": {
+    color: "#e0e0e0",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "#e0e0e0",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "#e0e0e0",
+    },
+    "&:hover fieldset": {
+      borderColor: "#e0e0e0",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "#e0e0e0",
+    },
+  },
+});
