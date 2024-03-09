@@ -106,6 +106,7 @@ function App() {
             height={"100%"}
             minHeight={"calc(100%-120px)"}
             px={"20px"}
+            width={"100%"}
             maxWidth={"md"}
           >
             <Chats
@@ -143,7 +144,7 @@ function App() {
                         sx={{ color: "#fff", cursor: "pointer" }}
                       />
                     </InputAdornment>
-                    <InputAdornment>
+                    <InputAdornment position="end">
                       {!micOn ? (
                         <Tooltip title="record">
                           <MicIcon
