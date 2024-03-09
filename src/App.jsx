@@ -1,5 +1,12 @@
 import "./App.css";
-import { Box, TextField, Typography, styled } from "@mui/material";
+import {
+  Box,
+  InputAdornment,
+  TextField,
+  Tooltip,
+  Typography,
+  styled,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MicIcon from "@mui/icons-material/Mic";
@@ -8,19 +15,65 @@ import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import { NavBarLarge, NavBarSmall } from "./components/Navbar";
 import { SideBarComponent } from "./components/SideBar";
+import PublishIcon from "@mui/icons-material/Publish";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import Chats from "./components/ChatApp";
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_REACT_GEMINI_KEY);
 
 function App() {
   const [open, setOpen] = React.useState(false);
+  const [micOn, setMicOn] = React.useState(false);
+  const [inputPrompt, setInputPrompt] = React.useState("");
+  const [chat, setChat] = React.useState([]);
+  const [chatBotMessage, setChatBotMessage] = React.useState("");
+  const [userMessage, setUserMessage] = React.useState("");
+  const [isAPILoading, setIsAPILoading] = React.useState(false);
+
+  const GeminiAPI = async (history, message) => {
+    // For text-only input, use the gemini-pro model
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const chat = model.startChat({
+      history: history,
+      generationConfig: {
+        maxOutputTokens: 1000,
+      },
+    });
+
+    const prompt = message;
+    const result = await chat.sendMessage(prompt);
+    const response = await result.response;
+    const text = response.text();
+    return text;
+  };
+
+  const handleTextInput = async () => {
+    setUserMessage(inputPrompt);
+    setInputPrompt("");
+    setIsAPILoading(true);
+    let response = await GeminiAPI([], inputPrompt);
+    setChat([
+      ...chat,
+      { role: "user", parts: inputPrompt },
+      { role: "model", parts: response },
+    ]);
+    setChatBotMessage(response);
+    setIsAPILoading(false);
+  };
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
+
+  React.useEffect(() => console.log(chat, userMessage, chatBotMessage), [chat]);
 
   return (
     <>
       <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
         <SideBarComponent />
         <Box
+          position={"relative"}
           display={"flex"}
           justifyContent={"flex-start"}
           alignItems={"center"}
@@ -49,34 +102,71 @@ function App() {
               <NavBarSmall toggleDrawer={toggleDrawer} />
             </Box>
           </Box>
+          <Box
+            height={"100%"}
+            minHeight={"calc(100%-120px)"}
+            px={"20px"}
+            maxWidth={"md"}
+          >
+            <Chats
+              isAPILoading={isAPILoading}
+              chat={chat}
+              userMessage={userMessage}
+              chatBotMessage={chatBotMessage}
+            />
+          </Box>
           {/* Footer */}
           <Box
-            position={"fixed"}
+            position={"sticky"}
             display={"flex"}
             justifyContent={"center"}
             alignItems={"center"}
             bottom={0}
             zIndex={1}
-            width={"100%"}
-            p={"20px 40px"}
             maxWidth={"md"}
+            padding={"0px 20px 20px"}
+            width={"100%"}
             bgcolor={"#1b1b32"}
           >
             <BInput
               multiline
-              dir="up"
               maxRows={5}
+              fullWidth
+              value={inputPrompt}
+              onChange={(e) => setInputPrompt(e.target.value)}
               InputProps={{
+                endAdornment: (
+                  <Box display={"flex"} alignItems={"center"} gap={"10px"}>
+                    <InputAdornment position="end">
+                      <PublishIcon
+                        onClick={handleTextInput}
+                        sx={{ color: "#fff", cursor: "pointer" }}
+                      />
+                    </InputAdornment>
+                    <InputAdornment>
+                      {!micOn ? (
+                        <Tooltip title="record">
+                          <MicIcon
+                            onClick={() => setMicOn(true)}
+                            sx={{ color: "#fff", cursor: "pointer" }}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="submit">
+                          <FiberManualRecordIcon
+                            sx={{ color: "#ff5252", cursor: "pointer" }}
+                            onClick={() => setMicOn(false)}
+                          />
+                        </Tooltip>
+                      )}
+                    </InputAdornment>
+                  </Box>
+                ),
                 sx: {
                   borderRadius: "15px",
                   color: "#fff",
-                  fontSize: "14px",
+                  fontSize: "16px",
                 },
-              }}
-              sx={{
-                minWidth: "280px",
-                maxWidth: "700px",
-                width: "100%",
               }}
               hiddenLabel
               id="filled-hidden-label-normal"
@@ -84,43 +174,11 @@ function App() {
               variant="outlined"
             />
           </Box>
-          {/* CHAT BOT CONTENT */}
-          <Box display={"flex"} justifyContent={"center"} width={"100%"}>
-            <Box maxWidth={"md"} width="100%" padding={"10px 20px"}>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-              <Typography variant="h1" color="#fff">
-                Hello
-              </Typography>
-            </Box>
-          </Box>
         </Box>
       </Box>
 
       <Drawer
-        PaperProps={{ style: { maxWidth: "280px", width: "100%" } }}
+        PaperProps={{ style: { maxWidth: "260px", width: "100%" } }}
         open={open}
         onClose={toggleDrawer(false)}
       >

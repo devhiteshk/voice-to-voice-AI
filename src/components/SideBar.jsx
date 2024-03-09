@@ -13,7 +13,7 @@ export const SideBarComponent = (props) => {
       }}
       zIndex={2}
       minHeight={"100vh"}
-      maxWidth={"280px"}
+      maxWidth={"260px"}
       width={"100%"}
       bgcolor={"#101418"}
     >
