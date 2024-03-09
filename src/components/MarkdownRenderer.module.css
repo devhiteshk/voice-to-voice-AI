@@ -1,0 +1,47 @@
+.reactMarkDown {
+  font-size: 14px !important ;
+  font-family: "Roboto Mono", monospace;
+}
+
+.reactMarkDown ul {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  list-style: disc outside none;
+}
+
+.reactMarkDown ul li {
+  margin-top: 0.2em;
+  margin-left: 2em;
+  display: list-item;
+  text-align: -webkit-match-parent;
+}
+
+.reactMarkDown p{
+  margin-bottom: 0.5em;
+}
+
+.reactMarkDown p strong{
+    margin-top: 0.4em;
+}
+
+.reactMarkDown li{
+    margin-bottom: 0.2em;
+  }
+
+.reactMarkDown ul :last-child{
+    margin-bottom: 2em;
+  }
+
+.reactMarkDown ol :last-child{
+    margin-bottom: 2em;
+  }
+
+  .reactMarkDown pre div{
+    padding: 20px 20px;
+    position: relative;
+  }
+
+
+.reactMarkDown pre :last-child{
+    margin-bottom: 2em;
+  }

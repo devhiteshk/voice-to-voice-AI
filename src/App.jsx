@@ -37,7 +37,7 @@ function App() {
     const chat = model.startChat({
       history: history,
       generationConfig: {
-        maxOutputTokens: 1000,
+        maxOutputTokens: 10000,
       },
     });
 
@@ -68,22 +68,15 @@ function App() {
 
   return (
     <>
-      <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
+      <Box
+        width={"100%"}
+        display={"flex"}
+        justifyContent={"center"}
+      >
         <SideBarComponent />
-        <Box
-          position={"relative"}
-          display={"flex"}
-          justifyContent={"flex-start"}
-          alignItems={"center"}
-          width={"100%"}
-          maxHeight={"100vh"}
-          height={"100vh"}
-          bgcolor={"#1b1b32"}
-          sx={{ overflowX: "hidden", overflowY: "scroll" }}
-          flexDirection={"column"}
-        >
-          {/* NAVBAR */}
-          <Box position={"sticky"} top={0} width={"100%"}>
+        {/* NAVBAR */}
+        <Box width={"100%"}>
+          <Box position={"sticky"} zIndex={4} top={0} width={"100%"}>
             {/* NAVBAR LARGE SCREEN */}
             <Box
               width={"100vw"}
@@ -95,19 +88,18 @@ function App() {
             <Box
               sx={{ display: { xs: "initial", sm: "initial", md: "none" } }}
               width={"100%"}
-              maxWidth={"xl"}
             >
               <NavBarSmall toggleDrawer={toggleDrawer} />
             </Box>
           </Box>
-          <Box maxWidth={"md"} p={"30px 20px"}>
-            <Chats
-              isAPILoading={isAPILoading}
-              chat={chat}
-              userMessage={userMessage}
-              chatBotMessage={chatBotMessage}
-            />
-          </Box>
+
+          <Chats
+            isAPILoading={isAPILoading}
+            chat={chat}
+            userMessage={userMessage}
+            chatBotMessage={chatBotMessage}
+          />
+
           {/* Footer */}
           <Box
             position={"sticky"}
@@ -116,57 +108,57 @@ function App() {
             alignItems={"flex-end"}
             bottom={0}
             zIndex={1}
-            height={"100%"}
-            maxWidth={"md"}
             width={"100%"}
             padding={"0px 20px 20px"}
             bgcolor={"#1b1b32"}
           >
-            <BInput
-              multiline
-              maxRows={5}
-              fullWidth
-              value={inputPrompt}
-              onChange={(e) => setInputPrompt(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <Box display={"flex"} alignItems={"center"} gap={"10px"}>
-                    <InputAdornment position="end">
-                      <PublishIcon
-                        onClick={handleTextInput}
-                        sx={{ color: "#fff", cursor: "pointer" }}
-                      />
-                    </InputAdornment>
-                    <InputAdornment position="end">
-                      {!micOn ? (
-                        <Tooltip title="record">
-                          <MicIcon
-                            onClick={() => setMicOn(true)}
-                            sx={{ color: "#fff", cursor: "pointer" }}
-                          />
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title="submit">
-                          <FiberManualRecordIcon
-                            sx={{ color: "#ff5252", cursor: "pointer" }}
-                            onClick={() => setMicOn(false)}
-                          />
-                        </Tooltip>
-                      )}
-                    </InputAdornment>
-                  </Box>
-                ),
-                sx: {
-                  borderRadius: "15px",
-                  color: "#fff",
-                  fontSize: "16px",
-                },
-              }}
-              hiddenLabel
-              id="filled-hidden-label-normal"
-              placeholder="Message to AI..."
-              variant="outlined"
-            />
+            <Box maxWidth={"md"} width={"100%"}>
+              <BInput
+                multiline
+                maxRows={5}
+                fullWidth
+                value={inputPrompt}
+                onChange={(e) => setInputPrompt(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <Box display={"flex"} alignItems={"center"} gap={"10px"}>
+                      <InputAdornment position="end">
+                        <PublishIcon
+                          onClick={handleTextInput}
+                          sx={{ color: "#fff", cursor: "pointer" }}
+                        />
+                      </InputAdornment>
+                      <InputAdornment position="end">
+                        {!micOn ? (
+                          <Tooltip title="record">
+                            <MicIcon
+                              onClick={() => setMicOn(true)}
+                              sx={{ color: "#fff", cursor: "pointer" }}
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="submit">
+                            <FiberManualRecordIcon
+                              sx={{ color: "#ff5252", cursor: "pointer" }}
+                              onClick={() => setMicOn(false)}
+                            />
+                          </Tooltip>
+                        )}
+                      </InputAdornment>
+                    </Box>
+                  ),
+                  sx: {
+                    borderRadius: "15px",
+                    color: "#fff",
+                    fontSize: "16px",
+                  },
+                }}
+                hiddenLabel
+                id="filled-hidden-label-normal"
+                placeholder="Message to AI..."
+                variant="outlined"
+              />
+            </Box>
           </Box>
         </Box>
       </Box>

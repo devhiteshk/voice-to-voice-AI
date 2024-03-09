@@ -12,8 +12,11 @@ export const SideBarComponent = (props) => {
         },
       }}
       zIndex={2}
-      minHeight={"100vh"}
       maxWidth={"260px"}
+      overflow={"hidden"}
+      position={"sticky"}
+      top={0}
+      height={"100vh"}
       width={"100%"}
       bgcolor={"#101418"}
     >
