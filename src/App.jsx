@@ -29,9 +29,9 @@ function App() {
   const [chatBotMessage, setChatBotMessage] = React.useState("");
   const [userMessage, setUserMessage] = React.useState("");
   const [isAPILoading, setIsAPILoading] = React.useState(false);
+  const [chatHistory, setChatHistory] = React.useState([]);
 
   const GeminiAPI = async (history, message) => {
-    // For text-only input, use the gemini-pro model
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     const chat = model.startChat({
@@ -52,7 +52,7 @@ function App() {
     setUserMessage(inputPrompt);
     setInputPrompt("");
     setIsAPILoading(true);
-    let response = await GeminiAPI([], inputPrompt);
+    let response = await GeminiAPI(chat, inputPrompt);
     setChat([
       ...chat,
       { role: "user", parts: inputPrompt },
@@ -66,8 +66,6 @@ function App() {
     setOpen(newOpen);
   };
 
-  React.useEffect(() => console.log(chat, userMessage, chatBotMessage), [chat]);
-
   return (
     <>
       <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
@@ -79,7 +77,7 @@ function App() {
           alignItems={"center"}
           width={"100%"}
           maxHeight={"100vh"}
-          height="100vh"
+          height={"100vh"}
           bgcolor={"#1b1b32"}
           sx={{ overflowX: "hidden", overflowY: "scroll" }}
           flexDirection={"column"}
@@ -102,13 +100,7 @@ function App() {
               <NavBarSmall toggleDrawer={toggleDrawer} />
             </Box>
           </Box>
-          <Box
-            height={"100%"}
-            minHeight={"calc(100%-120px)"}
-            px={"20px"}
-            width={"100%"}
-            maxWidth={"md"}
-          >
+          <Box maxWidth={"md"} p={"30px 20px"}>
             <Chats
               isAPILoading={isAPILoading}
               chat={chat}
@@ -121,12 +113,13 @@ function App() {
             position={"sticky"}
             display={"flex"}
             justifyContent={"center"}
-            alignItems={"center"}
+            alignItems={"flex-end"}
             bottom={0}
             zIndex={1}
+            height={"100%"}
             maxWidth={"md"}
-            padding={"0px 20px 20px"}
             width={"100%"}
+            padding={"0px 20px 20px"}
             bgcolor={"#1b1b32"}
           >
             <BInput

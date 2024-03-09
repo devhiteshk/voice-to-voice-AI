@@ -15,17 +15,19 @@ export function MarkdownRenderer({ children: markdown }) {
           const match = /language-(\w+)/.exec(className || "");
 
           return !inline && match ? (
-            <SyntaxHighlighter
-              style={dracula}
-              PreTag="div"
-              language={match[1]}
-              {...props}
-            >
-              {String(children).replace(/\n$/, "")}
-            </SyntaxHighlighter>
+            <>
+              <SyntaxHighlighter
+                style={dracula}
+                PreTag="div"
+                language={match[1]}
+                {...props}
+              >
+                {String(children).replace(/\n$/, "")}
+              </SyntaxHighlighter>
+            </>
           ) : (
             <code className={className} {...props}>
-              {children}
+              <>{children}</>
             </code>
           );
         },
