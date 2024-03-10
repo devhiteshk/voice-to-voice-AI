@@ -29,7 +29,24 @@ export const NavBarLarge = () => {
   );
 };
 
-export const NavBarSmall = ({ toggleDrawer }) => {
+export const NavBarSmall = ({
+  toggleDrawer,
+  setCurrentSessionId,
+  setChatHistory,
+  setCurrentChat,
+  setChatBotMessage,
+  setUserMessage,
+}) => {
+
+  const handleCreateNewChat = () => {
+    const newSessionId = `session_${new Date().getTime()}`;
+    setCurrentSessionId(newSessionId);
+    setChatHistory([]);
+    setCurrentChat([]);
+    setChatBotMessage("");
+    setUserMessage("");
+  };
+
   return (
     <Box>
       <Box
@@ -63,7 +80,7 @@ export const NavBarSmall = ({ toggleDrawer }) => {
           </Typography>
           <MicIcon style={{ color: "red" }} />
         </Box>
-        <Box display={"flex"} justifyContent={"center"} alignItems={"center"}>
+        <Box onClick={handleCreateNewChat} display={"flex"} justifyContent={"center"} alignItems={"center"}>
           <DriveFileRenameOutlineIcon
             sx={{ cursor: "pointer" }}
             style={{ color: "#fff" }}

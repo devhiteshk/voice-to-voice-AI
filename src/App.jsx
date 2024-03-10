@@ -1,6 +1,7 @@
 import "./App.css";
 import {
   Box,
+  CircularProgress,
   InputAdornment,
   TextField,
   Tooltip,
@@ -19,17 +20,19 @@ import PublishIcon from "@mui/icons-material/Publish";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Chats from "./components/ChatApp";
+import { saveChatToLocalStorage } from "./functions/Sessions";
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_REACT_GEMINI_KEY);
 
 function App() {
   const [open, setOpen] = React.useState(false);
   const [micOn, setMicOn] = React.useState(false);
   const [inputPrompt, setInputPrompt] = React.useState("");
-  const [chat, setChat] = React.useState([]);
   const [chatBotMessage, setChatBotMessage] = React.useState("");
   const [userMessage, setUserMessage] = React.useState("");
   const [isAPILoading, setIsAPILoading] = React.useState(false);
   const [chatHistory, setChatHistory] = React.useState([]);
+  const [currentChat, setCurrentChat] = React.useState([]);
+  const [currentSessionId, setCurrentSessionId] = React.useState("");
 
   const GeminiAPI = async (history, message) => {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -37,7 +40,7 @@ function App() {
     const chat = model.startChat({
       history: history,
       generationConfig: {
-        maxOutputTokens: 10000,
+        maxOutputTokens: 100,
       },
     });
 
@@ -49,12 +52,18 @@ function App() {
   };
 
   const handleTextInput = async () => {
+    setCurrentChat(chatHistory);
     setUserMessage(inputPrompt);
     setInputPrompt("");
     setIsAPILoading(true);
-    let response = await GeminiAPI(chat, inputPrompt);
-    setChat([
-      ...chat,
+    let response = await GeminiAPI(chatHistory, inputPrompt);
+    setChatHistory([
+      ...chatHistory,
+      { role: "user", parts: inputPrompt },
+      { role: "model", parts: response },
+    ]);
+    saveChatToLocalStorage(currentSessionId, [
+      ...chatHistory,
       { role: "user", parts: inputPrompt },
       { role: "model", parts: response },
     ]);
@@ -66,14 +75,22 @@ function App() {
     setOpen(newOpen);
   };
 
+  React.useEffect(() => {
+    const sessionId = `session_${new Date().getTime()}`;
+    setCurrentSessionId(sessionId);
+  }, []);
+
   return (
     <>
-      <Box
-        width={"100%"}
-        display={"flex"}
-        justifyContent={"center"}
-      >
-        <SideBarComponent />
+      <Box width={"100%"} display={"flex"} justifyContent={"center"}>
+        <SideBarComponent
+          setChatHistory={setChatHistory}
+          setCurrentChat={setCurrentChat}
+          currentSessionId={currentSessionId}
+          setCurrentSessionId={setCurrentSessionId}
+          setChatBotMessage={setChatBotMessage}
+          setUserMessage={setUserMessage}
+        />
         {/* NAVBAR */}
         <Box width={"100%"}>
           <Box position={"sticky"} zIndex={4} top={0} width={"100%"}>
@@ -89,13 +106,20 @@ function App() {
               sx={{ display: { xs: "initial", sm: "initial", md: "none" } }}
               width={"100%"}
             >
-              <NavBarSmall toggleDrawer={toggleDrawer} />
+              <NavBarSmall
+                toggleDrawer={toggleDrawer}
+                setCurrentSessionId={setCurrentSessionId}
+                setChatHistory={setChatHistory}
+                setCurrentChat={setCurrentChat}
+                setChatBotMessage={setChatBotMessage}
+                setUserMessage={setUserMessage}
+              />
             </Box>
           </Box>
 
           <Chats
             isAPILoading={isAPILoading}
-            chat={chat}
+            chat={currentChat}
             userMessage={userMessage}
             chatBotMessage={chatBotMessage}
           />
@@ -122,29 +146,35 @@ function App() {
                 InputProps={{
                   endAdornment: (
                     <Box display={"flex"} alignItems={"center"} gap={"10px"}>
-                      <InputAdornment position="end">
-                        <PublishIcon
-                          onClick={handleTextInput}
-                          sx={{ color: "#fff", cursor: "pointer" }}
-                        />
-                      </InputAdornment>
-                      <InputAdornment position="end">
-                        {!micOn ? (
-                          <Tooltip title="record">
-                            <MicIcon
-                              onClick={() => setMicOn(true)}
+                      {isAPILoading ? (
+                        <CircularProgress size={"24px"} />
+                      ) : (
+                        <>
+                          <InputAdornment position="end">
+                            <PublishIcon
+                              onClick={handleTextInput}
                               sx={{ color: "#fff", cursor: "pointer" }}
                             />
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title="submit">
-                            <FiberManualRecordIcon
-                              sx={{ color: "#ff5252", cursor: "pointer" }}
-                              onClick={() => setMicOn(false)}
-                            />
-                          </Tooltip>
-                        )}
-                      </InputAdornment>
+                          </InputAdornment>
+                          <InputAdornment position="end">
+                            {!micOn ? (
+                              <Tooltip title="record">
+                                <MicIcon
+                                  onClick={() => setMicOn(true)}
+                                  sx={{ color: "#fff", cursor: "pointer" }}
+                                />
+                              </Tooltip>
+                            ) : (
+                              <Tooltip title="submit">
+                                <FiberManualRecordIcon
+                                  sx={{ color: "#ff5252", cursor: "pointer" }}
+                                  onClick={() => setMicOn(false)}
+                                />
+                              </Tooltip>
+                            )}
+                          </InputAdornment>
+                        </>
+                      )}
                     </Box>
                   ),
                   sx: {
@@ -164,11 +194,21 @@ function App() {
       </Box>
 
       <Drawer
-        PaperProps={{ style: { maxWidth: "260px", width: "100%" } }}
+        PaperProps={{
+          style: { maxWidth: "260px", width: "100%", height: "100%" },
+        }}
         open={open}
         onClose={toggleDrawer(false)}
       >
-        <SideBarComponent smallOpen={true} />
+        <SideBarComponent
+          smallOpen={true}
+          setChatHistory={setChatHistory}
+          setCurrentChat={setCurrentChat}
+          currentSessionId={currentSessionId}
+          setCurrentSessionId={setCurrentSessionId}
+          setChatBotMessage={setChatBotMessage}
+          setUserMessage={setUserMessage}
+        />
       </Drawer>
     </>
   );

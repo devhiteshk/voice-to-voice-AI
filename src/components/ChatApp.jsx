@@ -1,11 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Avatar, Box, Skeleton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
 function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
-  console.log(chat, isAPILoading, userMessage, chatBotMessage);
-
-  const [height, setHeight] = useState(window?.innerHeight - 149)
+  const [height, setHeight] = useState(window?.innerHeight - 149);
 
   useEffect(() => {
     const handleResize = () => {
@@ -16,7 +14,6 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
       window?.removeEventListener("resize", handleResize);
     };
   }, [window?.innerHeight]);
-
 
   let dummy = [
     {
@@ -43,10 +40,9 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
     <Box
       width={"100%"}
       maxHeight={height}
-      height={"100%"}
+      height={{ xs: height, md: "100%" }}
       display={"flex"}
       overflow={"auto"}
-      overflowX={"hidden"}
       justifyContent={"center"}
       padding={"20px 20px"}
       bgcolor={"#1b1b32"}
@@ -60,7 +56,7 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
         width={"100%"}
         sx={{ color: "#fff" }}
       >
-        {dummy?.map((item, index) => (
+        {chat?.map((item, index) => (
           <Box
             key={index}
             display={"flex"}
@@ -84,6 +80,7 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
                 color="#fff"
                 fontSize={"12px"}
                 fontFamily={"Roboto Mono, monospace"}
+                fontWeight={"bold"}
               >
                 {item?.role === "user" ? "You" : "AI"}
               </Typography>
@@ -93,6 +90,84 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
             </Box>
           </Box>
         ))}
+        {userMessage?.length > 0 && (
+          <>
+            <Box
+              display={"flex"}
+              alignItems={"flex-start"}
+              gap={"10px"}
+              width={"100%"}
+            >
+              <Box
+                sx={{
+                  width: "34px",
+                  borderRadius: "50%",
+                  height: "34px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#ff5722",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  color="#fff"
+                  fontSize={"12px"}
+                  fontFamily={"Roboto Mono, monospace"}
+                  fontWeight={"bold"}
+                >
+                  You
+                </Typography>
+              </Box>
+              <Box mt={"8px"} width={"100%"}>
+                <MarkdownRenderer>{userMessage}</MarkdownRenderer>
+              </Box>
+            </Box>
+            {chatBotMessage.length > 0 && (
+              <Box
+                display={"flex"}
+                alignItems={"flex-start"}
+                gap={"10px"}
+                width={"100%"}
+                pb={"20px"}
+              >
+                <Box
+                  sx={{
+                    width: "34px",
+                    borderRadius: "50%",
+                    height: "34px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "#00c853",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    color="#fff"
+                    fontSize={"12px"}
+                    fontWeight={"bold"}
+                    fontFamily={"Roboto Mono, monospace"}
+                  >
+                    AI
+                  </Typography>
+                </Box>
+
+                <Box mt={isAPILoading ? "-2px" : "8px"} width={"100%"}>
+                  {isAPILoading ? (
+                    <Skeleton
+                      animation="pulse"
+                      sx={{ bgcolor: "rgba(255, 255, 255, 0.15)" }}
+                      height={"40px"}
+                    />
+                  ) : (
+                    <MarkdownRenderer>{chatBotMessage}</MarkdownRenderer>
+                  )}
+                </Box>
+              </Box>
+            )}
+          </>
+        )}
       </Box>
     </Box>
   );
