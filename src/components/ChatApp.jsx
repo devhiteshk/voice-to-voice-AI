@@ -1,6 +1,7 @@
 import { Avatar, Box, Skeleton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import TextToSpeech from "./TextToSpeech";
 
 function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
   const [height, setHeight] = useState(window?.innerHeight - 149);
@@ -161,9 +162,13 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
                         animation="pulse"
                         sx={{ bgcolor: "rgba(255, 255, 255, 0.15)" }}
                         height={"40px"}
+                        width={"100%"}
                       />
                     ) : (
-                      <MarkdownRenderer>{chatBotMessage}</MarkdownRenderer>
+                      <>
+                        <MarkdownRenderer>{chatBotMessage}</MarkdownRenderer>
+                        <TextToSpeech text={chatBotMessage} />
+                      </>
                     )}
                   </Box>
                 </Box>
