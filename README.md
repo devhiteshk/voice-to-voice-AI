@@ -3,5 +3,5 @@
 Made on React + Vite
 
 ### Technologies Used
-- IBM Cloud
+- React Speech Recognition
 - Google Gemini

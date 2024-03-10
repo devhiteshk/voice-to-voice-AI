@@ -10,6 +10,7 @@ import {
 export const SideBarComponent = ({
   smallOpen,
   setChatHistory,
+  chatHistory,
   setCurrentChat,
   currentSessionId,
   setCurrentSessionId,
@@ -37,7 +38,7 @@ export const SideBarComponent = ({
 
   useEffect(() => {
     setHistoryStorage(retrieveChatsFromLocalStorage());
-  }, [currentSessionId, window?.localStorage]);
+  }, [currentSessionId, chatHistory]);
 
   return (
     <Box

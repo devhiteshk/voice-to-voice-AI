@@ -5,23 +5,22 @@ import {
   InputAdornment,
   TextField,
   Tooltip,
-  Typography,
   styled,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MicIcon from "@mui/icons-material/Mic";
 import * as React from "react";
 import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import { NavBarLarge, NavBarSmall } from "./components/Navbar";
 import { SideBarComponent } from "./components/SideBar";
 import PublishIcon from "@mui/icons-material/Publish";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import Chats from "./components/ChatApp";
 import { saveChatToLocalStorage } from "./functions/Sessions";
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_REACT_GEMINI_KEY);
+import { GeminiAPI } from "./components/Gemini/GeminiAPI";
+import SpeechRecognition, {
+  useSpeechRecognition,
+  resetTranscript,
+} from "react-speech-recognition";
 
 function App() {
   const [open, setOpen] = React.useState(false);
@@ -33,38 +32,46 @@ function App() {
   const [chatHistory, setChatHistory] = React.useState([]);
   const [currentChat, setCurrentChat] = React.useState([]);
   const [currentSessionId, setCurrentSessionId] = React.useState("");
+  const [micFeature, setMicFeature] = React.useState(true);
 
-  const GeminiAPI = async (history, message) => {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const { transcript, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
 
-    const chat = model.startChat({
-      history: history,
-      generationConfig: {
-        maxOutputTokens: 100,
-      },
+  const handleMicOn = () => {
+    setMicOn(true);
+    SpeechRecognition.startListening({
+      continuous: false,
+      language: "en-IN",
     });
-
-    const prompt = message;
-    const result = await chat.sendMessage(prompt);
-    const response = await result.response;
-    const text = response.text();
-    return text;
   };
 
-  const handleTextInput = async () => {
+  // console.log("debug", currentSessionId, transcript, inputPrompt);
+
+  const handlePromptSubmit = async (submitType) => {
     setCurrentChat(chatHistory);
-    setUserMessage(inputPrompt);
-    setInputPrompt("");
+    let text = "";
+    if (submitType === "text") {
+      setUserMessage(inputPrompt);
+      text = inputPrompt;
+      setInputPrompt("");
+    } else if (submitType === "audio") {
+      setMicOn(false);
+      SpeechRecognition.stopListening();
+      setInputPrompt("");
+      text = transcript;
+      setUserMessage(text);
+      SpeechRecognition.resetTranscript;
+    }
     setIsAPILoading(true);
-    let response = await GeminiAPI(chatHistory, inputPrompt);
+    let response = await GeminiAPI(chatHistory, text);
     setChatHistory([
       ...chatHistory,
-      { role: "user", parts: inputPrompt },
+      { role: "user", parts: text },
       { role: "model", parts: response },
     ]);
     saveChatToLocalStorage(currentSessionId, [
       ...chatHistory,
-      { role: "user", parts: inputPrompt },
+      { role: "user", parts: text },
       { role: "model", parts: response },
     ]);
     setChatBotMessage(response);
@@ -78,6 +85,7 @@ function App() {
   React.useEffect(() => {
     const sessionId = `session_${new Date().getTime()}`;
     setCurrentSessionId(sessionId);
+    !browserSupportsSpeechRecognition && setMicFeature(false);
   }, []);
 
   return (
@@ -86,6 +94,7 @@ function App() {
         <SideBarComponent
           setChatHistory={setChatHistory}
           setCurrentChat={setCurrentChat}
+          chatHistory={chatHistory}
           currentSessionId={currentSessionId}
           setCurrentSessionId={setCurrentSessionId}
           setChatBotMessage={setChatBotMessage}
@@ -152,27 +161,29 @@ function App() {
                         <>
                           <InputAdornment position="end">
                             <PublishIcon
-                              onClick={handleTextInput}
+                              onClick={() => handlePromptSubmit("text")}
                               sx={{ color: "#fff", cursor: "pointer" }}
                             />
                           </InputAdornment>
-                          <InputAdornment position="end">
-                            {!micOn ? (
-                              <Tooltip title="record">
-                                <MicIcon
-                                  onClick={() => setMicOn(true)}
-                                  sx={{ color: "#fff", cursor: "pointer" }}
-                                />
-                              </Tooltip>
-                            ) : (
-                              <Tooltip title="submit">
-                                <FiberManualRecordIcon
-                                  sx={{ color: "#ff5252", cursor: "pointer" }}
-                                  onClick={() => setMicOn(false)}
-                                />
-                              </Tooltip>
-                            )}
-                          </InputAdornment>
+                          {micFeature && (
+                            <InputAdornment position="end">
+                              {!micOn ? (
+                                <Tooltip title="record">
+                                  <MicIcon
+                                    onClick={handleMicOn}
+                                    sx={{ color: "#fff", cursor: "pointer" }}
+                                  />
+                                </Tooltip>
+                              ) : (
+                                <Tooltip title="submit">
+                                  <FiberManualRecordIcon
+                                    sx={{ color: "#ff5252", cursor: "pointer" }}
+                                    onClick={() => handlePromptSubmit("audio")}
+                                  />
+                                </Tooltip>
+                              )}
+                            </InputAdornment>
+                          )}
                         </>
                       )}
                     </Box>
@@ -203,6 +214,7 @@ function App() {
         <SideBarComponent
           smallOpen={true}
           setChatHistory={setChatHistory}
+          chatHistory={chatHistory}
           setCurrentChat={setCurrentChat}
           currentSessionId={currentSessionId}
           setCurrentSessionId={setCurrentSessionId}

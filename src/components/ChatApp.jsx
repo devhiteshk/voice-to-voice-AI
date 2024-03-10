@@ -37,62 +37,29 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
   ];
 
   return (
-    <Box
-      width={"100%"}
-      maxHeight={height}
-      height={{ xs: height, md: "100%" }}
-      display={"flex"}
-      overflow={"auto"}
-      justifyContent={"center"}
-      padding={"20px 20px"}
-      bgcolor={"#1b1b32"}
-      zIndex={10}
-    >
+    <Box height={"100vh"} bgcolor={"#1b1b32"}>
       <Box
-        display={"flex"}
-        flexDirection={"column"}
-        gap={"35px"}
-        maxWidth={"md"}
         width={"100%"}
-        sx={{ color: "#fff" }}
+        maxHeight={height}
+        height={{ xs: height, md: "100%" }}
+        display={"flex"}
+        overflow={"auto"}
+        justifyContent={"center"}
+        padding={"20px 20px"}
+        bgcolor={"#1b1b32"}
+        zIndex={10}
       >
-        {chat?.map((item, index) => (
-          <Box
-            key={index}
-            display={"flex"}
-            alignItems={"flex-start"}
-            gap={"10px"}
-            width={"100%"}
-          >
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          gap={"35px"}
+          maxWidth={"md"}
+          width={"100%"}
+          sx={{ color: "#fff" }}
+        >
+          {chat?.map((item, index) => (
             <Box
-              sx={{
-                width: "34px",
-                borderRadius: "50%",
-                height: "34px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: item?.role === "user" ? "#ff5722" : "#00c853",
-              }}
-            >
-              <Typography
-                variant="h6"
-                color="#fff"
-                fontSize={"12px"}
-                fontFamily={"Roboto Mono, monospace"}
-                fontWeight={"bold"}
-              >
-                {item?.role === "user" ? "You" : "AI"}
-              </Typography>
-            </Box>
-            <Box mt={"8px"} width={"100%"}>
-              <MarkdownRenderer>{item?.parts}</MarkdownRenderer>
-            </Box>
-          </Box>
-        ))}
-        {userMessage?.length > 0 && (
-          <>
-            <Box
+              key={index}
               display={"flex"}
               alignItems={"flex-start"}
               gap={"10px"}
@@ -100,13 +67,14 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
             >
               <Box
                 sx={{
-                  width: "34px",
+                  width: { md: "34px", xs: "28px" },
                   borderRadius: "50%",
-                  height: "34px",
+                  height: { md: "34px", xs: "28px" },
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  backgroundColor: "#ff5722",
+                  backgroundColor:
+                    item?.role === "user" ? "#ff5722" : "#00c853",
                 }}
               >
                 <Typography
@@ -116,20 +84,21 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
                   fontFamily={"Roboto Mono, monospace"}
                   fontWeight={"bold"}
                 >
-                  You
+                  {item?.role === "user" ? "You" : "AI"}
                 </Typography>
               </Box>
               <Box mt={"8px"} width={"100%"}>
-                <MarkdownRenderer>{userMessage}</MarkdownRenderer>
+                <MarkdownRenderer>{item?.parts}</MarkdownRenderer>
               </Box>
             </Box>
-            {chatBotMessage.length > 0 && (
+          ))}
+          {userMessage?.length > 0 && (
+            <>
               <Box
                 display={"flex"}
                 alignItems={"flex-start"}
                 gap={"10px"}
                 width={"100%"}
-                pb={"20px"}
               >
                 <Box
                   sx={{
@@ -139,35 +108,69 @@ function Chats({ isAPILoading, chat, userMessage, chatBotMessage }) {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundColor: "#00c853",
+                    backgroundColor: "#ff5722",
                   }}
                 >
                   <Typography
                     variant="h6"
                     color="#fff"
                     fontSize={"12px"}
-                    fontWeight={"bold"}
                     fontFamily={"Roboto Mono, monospace"}
+                    fontWeight={"bold"}
                   >
-                    AI
+                    You
                   </Typography>
                 </Box>
-
-                <Box mt={isAPILoading ? "-2px" : "8px"} width={"100%"}>
-                  {isAPILoading ? (
-                    <Skeleton
-                      animation="pulse"
-                      sx={{ bgcolor: "rgba(255, 255, 255, 0.15)" }}
-                      height={"40px"}
-                    />
-                  ) : (
-                    <MarkdownRenderer>{chatBotMessage}</MarkdownRenderer>
-                  )}
+                <Box mt={"8px"} width={"100%"}>
+                  <MarkdownRenderer>{userMessage}</MarkdownRenderer>
                 </Box>
               </Box>
-            )}
-          </>
-        )}
+              {chatBotMessage.length > 0 && (
+                <Box
+                  display={"flex"}
+                  alignItems={"flex-start"}
+                  gap={"10px"}
+                  width={"100%"}
+                  pb={"20px"}
+                >
+                  <Box
+                    sx={{
+                      width: "34px",
+                      borderRadius: "50%",
+                      height: "34px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "#00c853",
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      color="#fff"
+                      fontSize={"12px"}
+                      fontWeight={"bold"}
+                      fontFamily={"Roboto Mono, monospace"}
+                    >
+                      AI
+                    </Typography>
+                  </Box>
+
+                  <Box mt={isAPILoading ? "-2px" : "8px"} width={"100%"}>
+                    {isAPILoading ? (
+                      <Skeleton
+                        animation="pulse"
+                        sx={{ bgcolor: "rgba(255, 255, 255, 0.15)" }}
+                        height={"40px"}
+                      />
+                    ) : (
+                      <MarkdownRenderer>{chatBotMessage}</MarkdownRenderer>
+                    )}
+                  </Box>
+                </Box>
+              )}
+            </>
+          )}
+        </Box>
       </Box>
     </Box>
   );
