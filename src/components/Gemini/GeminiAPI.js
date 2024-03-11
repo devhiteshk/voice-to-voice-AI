@@ -7,7 +7,7 @@ export const GeminiAPI = async (history, message) => {
   const chat = model.startChat({
     history: history,
     generationConfig: {
-      maxOutputTokens: 100,
+      maxOutputTokens: 500,
     },
   });
 
