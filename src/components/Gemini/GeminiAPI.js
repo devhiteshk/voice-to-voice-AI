@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_REACT_GEMINI_KEY);
 
 export const GeminiAPI = async (history, message) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model:  "gemini-2.0-flash" });
 
   const chat = model.startChat({
     history: history,
